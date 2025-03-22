@@ -101,7 +101,7 @@ const styleContent = `
     opacity: 1;
   }
 
-  .rorocustom-table-of-contents-heading-darktheme {
+  .rorocustom-table-of-contents-heading-darktheme > div {
     background-color: rgba(255, 255, 255, 0.13) !important;
   }
 
@@ -109,7 +109,7 @@ const styleContent = `
     color: white;
   }
     
-  .rorocustom-table-of-contents-active-darktheme {
+  .rorocustom-table-of-contents-active-darktheme > div {
     background-color: rgb(211, 211, 211) !important;
     box-shadow: rgb(211, 211, 211) 0px 0px 3px !important;
   }
