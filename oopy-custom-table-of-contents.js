@@ -1,4 +1,4 @@
-const styleContent=`
+const styleContent = `
 @media (min-width: 481px) {
   .rorocustom-table-of-contents {
     -ms-overflow-style: none;
@@ -121,18 +121,180 @@ const styleContent=`
   }
 }
 
-`,htmlContent=`
-<div class=rorocustom-table-of-contents>
-  <div style=display:flex>
-  <div contenteditable=false style=width:100%>
-  <div class=rorocustom-table-of-contents-container>
-  <div class=rorocustom-table-of-contents-transition>
-  <div class=rorocustom-table-of-contents-wrapper>
-  <div class=rorocustom-table-of-contents-wrapper-padding></div>
-  </div>
-  </div>
-  </div>
-  </div>
-  </div>
-  </div>
-    `,tagToClass={H2:"rorocustom-table-of-contents-heading1",H3:"rorocustom-table-of-contents-heading2",H4:"rorocustom-table-of-contents-heading3"};let scrollSpyFlag=!0,activeClassNameByTheme="rorocustom-table-of-contents-active";function setupScrollSpy(t){let o=Array.from(document.querySelectorAll(".rorocustom-table-of-contents-heading"));function e(){if(!scrollSpyFlag)return;let e=function o(){let e=window.scrollY+20,n=0;for(let a=0;a<t.length;a++){let r=t[a].getBoundingClientRect().top+window.scrollY;if(r<=e)n=a;else break}return n}();o.forEach((t,o)=>{o===e?t.classList.add(activeClassNameByTheme):t.classList.remove(activeClassNameByTheme)})}window.addEventListener("scroll",e),e()}function getFlatHeadings(t){if("string"!=typeof t)return[];let o=document.querySelector(t);if(!o)return[];let e=[];return o.querySelectorAll("h2, h3, h4").forEach(t=>{e.push(t)}),e}function insertTableOfContents(){let t=document.createElement("div");document.body.appendChild(t),document.body.style.position="relative",t.outerHTML=htmlContent;let o=document.querySelector(".rorocustom-table-of-contents");if(!o)return[];let e=getFlatHeadings(".notion-page-content"),n=document.querySelector(".rorocustom-table-of-contents-wrapper-padding");if(!n)return[];let a=document.body.classList.contains("dark");return e.forEach(t=>{let o=document.createElement("div"),e=document.createElement("div"),r=document.createElement("p");o.classList.add("rorocustom-table-of-contents-heading"),o.classList.add(tagToClass[t.tagName]),r.classList.add("rorocustom-table-of-contents-label"),r.textContent=t.textContent,a&&(o.classList.add("rorocustom-table-of-contents-heading-darktheme"),r.classList.add("rorocustom-table-of-contents-label-darktheme"),activeClassNameByTheme="rorocustom-table-of-contents-active-darktheme"),o.addEventListener("click",e=>{e.stopPropagation(),e.preventDefault(),scrollSpyFlag=!1;let n=document.querySelector(`.${activeClassNameByTheme}`);n&&n.classList.remove(activeClassNameByTheme),o.classList.add(activeClassNameByTheme),t.scrollIntoView({behavior:"smooth",block:"start"}),setTimeout(()=>{scrollSpyFlag=!0},1e3)}),o.appendChild(r),o.appendChild(e),n.appendChild(o)}),console.log("init: insert rorocustom table of contents!"),e}!function(){let t=document.createElement("style");t.textContent=styleContent,document.head.appendChild(t);let o=insertTableOfContents();setupScrollSpy(o)}();
+`;
+const htmlContent = `
+    <div class="rorocustom-table-of-contents">
+        <div style="display: flex">
+            <div contenteditable="false" style="width: 100%">
+            <div class="rorocustom-table-of-contents-container">
+                <div class="rorocustom-table-of-contents-transition">
+                <div class="rorocustom-table-of-contents-wrapper">
+                    <div class="rorocustom-table-of-contents-wrapper-padding"></div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    `;
+const tagToClass = {
+  H2: "rorocustom-table-of-contents-heading1",
+  H3: "rorocustom-table-of-contents-heading2",
+  H4: "rorocustom-table-of-contents-heading3",
+};
+
+let scrollSpyFlag = true;
+let activeClassNameByTheme = "rorocustom-table-of-contents-active";
+function setupScrollSpy(extractedHeadings) {
+  const indicators = Array.from(
+    document.querySelectorAll(".rorocustom-table-of-contents-heading")
+  );
+
+  function getCurrentActiveIndex() {
+    const thresholdPosition = window.scrollY + 20;
+    let currentIndex = 0;
+
+    for (let i = 0; i < extractedHeadings.length; i++) {
+      const headingTop =
+        extractedHeadings[i].getBoundingClientRect().top + window.scrollY;
+
+      if (headingTop <= thresholdPosition) {
+        currentIndex = i;
+      } else {
+        break;
+      }
+    }
+
+    return currentIndex;
+  }
+
+  function updateActiveIndicator() {
+    if (!scrollSpyFlag) return;
+    const currentIndex = getCurrentActiveIndex();
+
+    indicators.forEach((el, i) => {
+      if (i === currentIndex) {
+        el.classList.add(activeClassNameByTheme);
+      } else {
+        el.classList.remove(activeClassNameByTheme);
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateActiveIndicator);
+  updateActiveIndicator(); // 초기 실행
+}
+
+function getFlatHeadings(selector) {
+  if (typeof selector !== "string") return [];
+
+  const parent = document.querySelector(selector);
+  if (!parent) return [];
+
+  const flatHeadings = [];
+  parent.querySelectorAll("h2, h3, h4").forEach((heading) => {
+    flatHeadings.push(heading);
+  });
+  return flatHeadings;
+}
+
+function insertTableOfContents() {
+  const wrapper = document.createElement("div");
+  document.body.appendChild(wrapper);
+  document.body.style.position = "relative";
+  wrapper.outerHTML = htmlContent;
+
+  const floatingTableContents = document.querySelector(
+    ".rorocustom-table-of-contents"
+  );
+
+  if (!floatingTableContents) return [];
+
+  /*
+        insert table of contents
+    */
+  const extractedHeadings = getFlatHeadings(".notion-page-content");
+  const floatingTableContentsWrapperPadding = document.querySelector(
+    ".rorocustom-table-of-contents-wrapper-padding"
+  );
+
+  if (!floatingTableContentsWrapperPadding) return [];
+
+  const isDarkTheme = document.body.classList.contains("dark");
+  /** content element 삽입 */
+  extractedHeadings.forEach((heading) => {
+    const headingElement = document.createElement("div");
+    const headingElementInner = document.createElement("div");
+    const headingLabel = document.createElement("p");
+
+    headingElement.classList.add("rorocustom-table-of-contents-heading");
+    headingElement.classList.add(tagToClass[heading.tagName]);
+
+    // label 삽입
+    headingLabel.classList.add("rorocustom-table-of-contents-label");
+    headingLabel.textContent = heading.textContent;
+
+    if (isDarkTheme) {
+      headingElement.classList.add(
+        "rorocustom-table-of-contents-heading-darktheme"
+      );
+      headingLabel.classList.add(
+        "rorocustom-table-of-contents-label-darktheme"
+      );
+      activeClassNameByTheme = "rorocustom-table-of-contents-active-darktheme";
+    }
+
+    // scroll to heading
+    headingElement.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      scrollSpyFlag = false; // 스크롤 이동하는 동안은 spy에서 업데이트 비활성화하기
+      const currentActive = document.querySelector(
+        `.${activeClassNameByTheme}`
+      );
+      if (currentActive) {
+        currentActive.classList.remove(activeClassNameByTheme);
+      }
+      headingElement.classList.add(activeClassNameByTheme);
+      heading.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => {
+        scrollSpyFlag = true;
+      }, 1000);
+    });
+
+    headingElement.appendChild(headingLabel);
+    headingElement.appendChild(headingElementInner);
+    floatingTableContentsWrapperPadding.appendChild(headingElement);
+  });
+
+  console.log("init: insert rorocustom table of contents!");
+  return extractedHeadings;
+}
+
+function checkContentLoaded() {
+  const content = document.querySelector(".notion-page-content");
+  if (content) {
+    // 스타일 삽입
+    const style = document.createElement("style");
+    style.textContent = styleContent;
+    document.head.appendChild(style);
+
+    // JS 로직 실행
+    const extractedHeadings = insertTableOfContents();
+    setupScrollSpy(extractedHeadings);
+    return true;
+  }
+  return false;
+}
+
+function waitForContentLoaded() {
+  const interval = setInterval(() => {
+    const success = checkContentLoaded();
+    if (success) {
+      clearInterval(interval);
+    }
+  }, 500);
+}
+(function () {
+  waitForContentLoaded();
+})();
