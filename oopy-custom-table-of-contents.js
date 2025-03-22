@@ -262,6 +262,18 @@ function insertTableOfContents() {
       }, 1000);
     });
 
+    // top 조정
+    const notionScrollerChild = document.querySelector(
+      ".notion-scroller > div"
+    );
+
+    if (notionScrollerChild) {
+      const transitionWrapper = document.querySelector(
+        ".rorocustom-table-of-contents-transition"
+      );
+      transitionWrapper.style.top = `${notionScrollerChild.clientHeight}px`;
+    }
+
     headingElement.appendChild(headingLabel);
     headingElement.appendChild(headingElementInner);
     floatingTableContentsWrapperPadding.appendChild(headingElement);
