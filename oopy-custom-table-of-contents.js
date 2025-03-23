@@ -579,5 +579,8 @@ function waitForContentLoaded() {
   }, 500);
 }
 (function () {
+  if (window.location.pathname === "/") {
+    return;
+  }
   waitForContentLoaded();
 })();
