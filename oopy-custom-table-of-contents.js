@@ -199,6 +199,10 @@ const styleContent = `
   .rorocustom-table-of-contents {
     display: none;
   }
+
+  .rorocustom-table-of-contents-dialog {
+    display: none;
+  }
 }
 
 `;
